@@ -4,6 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -92,7 +98,11 @@ fun MainApp() {
             startDestination = ROUTE_HOME,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(ROUTE_HOME) {
+            composable(
+                route = ROUTE_HOME,
+                enterTransition = { fadeIn(animationSpec = tween(400)) },
+                exitTransition = { fadeOut(animationSpec = tween(400)) }
+            ) {
                 HomeScreen(
                     onCameraClick = { navController.navigate(ROUTE_CAMERA) },
                     onMusicClick = { navController.navigate(ROUTE_MUSIC) },
@@ -100,16 +110,52 @@ fun MainApp() {
                     onSensorClick = { navController.navigate(ROUTE_SENSOR) }
                 )
             }
-            composable(ROUTE_CAMERA) {
+            composable(
+                route = ROUTE_CAMERA,
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(400)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(400)
+                    )
+                }
+            ) {
                 CameraScreen(onBack = { navController.popBackStack() })
             }
-            composable(ROUTE_MUSIC) {
+            composable(
+                route = ROUTE_MUSIC,
+                enterTransition = { fadeIn(animationSpec = tween(500)) },
+                exitTransition = { fadeOut(animationSpec = tween(500)) }
+            ) {
                 MusicScreen(onBack = { navController.popBackStack() })
             }
-            composable(ROUTE_VIDEO) {
+            composable(
+                route = ROUTE_VIDEO,
+                enterTransition = { scaleIn(initialScale = 0.8f, animationSpec = tween(400)) },
+                exitTransition = { scaleOut(targetScale = 0.8f, animationSpec = tween(400)) }
+            ) {
                 VideoScreen(onBack = { navController.popBackStack() })
             }
-            composable(ROUTE_SENSOR) {
+            composable(
+                route = ROUTE_SENSOR,
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                        animationSpec = tween(400)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                        animationSpec = tween(400)
+                    )
+                }
+            ) {
                 StepCounterScreen(onBack = { navController.popBackStack() })
             }
         }
